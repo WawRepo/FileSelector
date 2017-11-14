@@ -1,3 +1,5 @@
+import os
+
 def generate(root_catalogue, file_config, output_directory):
     """
     :param root_catalogue: root catalogue that is used as a starting  point to
@@ -7,5 +9,12 @@ def generate(root_catalogue, file_config, output_directory):
     :param output_directory: path where all files specified in config file
     :return:
     """
-    pass
 
+    if not os.path.exists(root_catalogue):
+        raise FileExistsError("Specified root does not exist")
+
+    if not os.path.isfile(file_config):
+        raise FileExistsError("Specified file config does not exist")
+
+    if not os.path.exists(output_directory):
+        raise FileExistsError("Specified output folder does not exist")

@@ -38,27 +38,46 @@ class TestFileSelector(TestCase):
         touch(path3 + "\\file2.2")
         touch(path3 + "\\file3.3")
 
-        self.files_list = self.test_dir + "\\files_list"
-        touch(self.files_list)
-        file = open(self.files_list, "w")
-        file.writelines("path1/file1.1" + "\n")
-        file.writelines("path1/file1.3" + "\n")
-        file.writelines("path1/file2.2" + "\n")
-        file.writelines("path1/file3.1" + "\n")
-        file.writelines("path1/file3.2" + "\n")
-        file.close()
+        # self.files_list = self.test_dir + "\\files_list"
+        # touch(self.files_list)
+        # file = open(self.files_list, "w")
+        # file.writelines("path1/file1.1" + "\n")
+        # file.writelines("path1/file1.3" + "\n")
+        # file.writelines("path1/file2.2" + "\n")
+        # file.writelines("path1/file3.1" + "\n")
+        # file.writelines("path1/file3.2" + "\n")
+        # file.close()
 
-        expected_dir = self.test_dir + "\\expected_dir"
-        os.makedirs(expected_dir)
+        self.expected_dir = self.test_dir + "\\expected_dir"
+        os.makedirs(self.expected_dir)
 
-        touch(expected_dir + "\\file1.1")
-        touch(expected_dir + "\\file1.3")
-        touch(expected_dir + "\\file2.2")
-        touch(expected_dir + "\\file3.1")
-        touch(expected_dir + "\\file3.2")
+        touch(self.expected_dir + "\\file1.1")
+        touch(self.expected_dir + "\\file1.3")
+        touch(self.expected_dir + "\\file2.2")
+        touch(self.expected_dir + "\\file3.1")
+        touch(self.expected_dir + "\\file3.2")
 
+    def testRaiseExeptionWhenRootFolderNotExist(self):
+        self.assertRaises(FileExistsError, lambda: generate("x","X","x"))
 
+    def testRaiseExeptionWhenConfigFileNotExist(self):
+        self.assertRaises(FileExistsError, lambda: generate(os.getcwd(),"X","x"))
 
-    def testGenerate(self)
-        output_dir = self.test_dir + ""
-        pass
+    def testRaiseExeptionWhenOutputFolderNotExist(self):
+        self.assertRaises(FileExistsError,
+                          lambda: generate(os.getcwd(), os.getcwd() + "\\fileList.gen", "x"))
+
+    def testGenerate(self):
+        output_dir = self.test_dir + "\\generated"
+        config_file = "fileList.gen"
+        os.makedirs(output_dir)
+        generate(self.test_dir, config_file, output_dir)
+
+        import filecmp
+        comparison = filecmp.dircmp(output_dir,
+                                    self.expected_dir)
+
+        comparison = filecmp.dircmp(self.expected_dir,
+                                    self.expected_dir)
+        comparison.report_full_closure()
+
