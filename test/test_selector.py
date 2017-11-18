@@ -17,9 +17,9 @@ class TestFileSelector(TestCase):
             shutil.rmtree(self.test_dir, ignore_errors=True)
 
         os.makedirs(self.test_dir)
-        path1 = self.test_dir + "\\path1"
-        path2 = self.test_dir + "\\path2"
-        path3 = self.test_dir + "\\path3"
+        path1 = self.test_dir + "\\folder1"
+        path2 = self.test_dir + "\\folder2"
+        path3 = self.test_dir + "\\folder3"
         os.makedirs(path1)
         os.makedirs(path2)
         os.makedirs(path3)
@@ -34,8 +34,8 @@ class TestFileSelector(TestCase):
         touch(path2 + "\\file2.1")
         touch(path2 + "\\file2.2")
         touch(path2 + "\\file2.3")
-        touch(path3 + "\\file1.1")
-        touch(path3 + "\\file2.2")
+        touch(path3 + "\\file3.1")
+        touch(path3 + "\\file3.2")
         touch(path3 + "\\file3.3")
 
         # self.files_list = self.test_dir + "\\files_list"
@@ -73,11 +73,7 @@ class TestFileSelector(TestCase):
         os.makedirs(output_dir)
         generate(self.test_dir, config_file, output_dir)
 
-        import filecmp
-        comparison = filecmp.dircmp(output_dir,
-                                    self.expected_dir)
+        self.assertListEqual(os.listdir(self.expected_dir),os.listdir(output_dir))
 
-        comparison = filecmp.dircmp(self.expected_dir,
-                                    self.expected_dir)
-        comparison.report_full_closure()
-
+    def testGenerateFileNotExistInFolderStructure(self):
+        pass

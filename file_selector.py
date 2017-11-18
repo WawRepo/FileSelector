@@ -18,3 +18,10 @@ def generate(root_catalogue, file_config, output_directory):
 
     if not os.path.exists(output_directory):
         raise FileExistsError("Specified output folder does not exist")
+
+    files_to_lookup = [file.rstrip() for file in open(file_config)]
+
+    from shutil import copyfile
+    for file in files_to_lookup:
+        # if not os.path.isfile(root_catalogue + file):
+        copyfile(root_catalogue + "\\" + file, output_directory + "\\" + file[file.find("\\"):])
