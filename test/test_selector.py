@@ -6,7 +6,7 @@ from error_classes import FileExistsErrorNoConfig\
     , FileExistsErrorNoRoot\
     , FileExistsErrorFileAlreadyExist
 
-from file_selector import generate, extract_file_name, aggregate
+from file_selector import generate, extract_file_name, aggregate, not_comment_line
 
 class TestFileSelector(TestCase):
 
@@ -134,11 +134,19 @@ class TestFileSelector(TestCase):
         config_file = os.getcwd() + "\\fileList.gen"
         os.makedirs(output_dir)
 
+        # test should be run regardless generate functionality
         generate(self.test_dir, config_file, output_dir)
 
         aggregate(config_file, output_dir)
 
         import filecmp
-        self.assertTrue(filecmp.cmp(os.getcwd() + "\\aggregatedOutput.rel", output_dir + "fileList.gen.agg" ))
+        self.assertTrue(filecmp.cmp(os.getcwd() + "\\aggregatedOutput.rel", output_dir + "\\fileList.gen.agg" ))
 
 
+    def testIsCommentLine(self):
+        comment_identifier = '-'
+        self.assertFalse(not_comment_line("-asdf", comment_identifier))
+        self.assertTrue(not_comment_line("asdf", comment_identifier))
+
+        self.assertFalse(not_comment_line("#asdf"))
+        self.assertTrue(not_comment_line("asdf"))
