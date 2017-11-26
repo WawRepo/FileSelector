@@ -6,9 +6,10 @@ from error_classes import FileExistsErrorNoConfig\
 
 def extract_file_name(sub_path):
     """
-    :param sub_path: full file path. Ex. c:\home\user\1.txt
+    :param sub_path: full file path. Ex. c:\home\ user\1.txt
     :return: filename. Ex. 1.txt
     """
+
     if sub_path.rfind("\\") > 0:
         return sub_path[sub_path.rfind("\\") + 1:]
     return sub_path
@@ -44,3 +45,15 @@ def generate(root_catalogue, file_config, output_directory):
 
     copyfile(file_config,
              output_directory + "\\" + extract_file_name(file_config))
+
+
+def aggregate(file_config, directory_with_generated_files):
+    """
+    :param file_config:
+    :param directory_with_generated_files:
+    :return:
+    """
+
+    aggregate_file_name = extract_file_name(file_config) + ".agg"
+
+    files_to_lookup = [file.rstrip() for file in open(file_config)]

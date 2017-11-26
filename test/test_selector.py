@@ -6,7 +6,7 @@ from error_classes import FileExistsErrorNoConfig\
     , FileExistsErrorNoRoot\
     , FileExistsErrorFileAlreadyExist
 
-from file_selector import generate, extract_file_name
+from file_selector import generate, extract_file_name, aggregate
 
 class TestFileSelector(TestCase):
 
@@ -30,16 +30,24 @@ class TestFileSelector(TestCase):
         os.makedirs(path2)
         os.makedirs(path3)
 
-        self.touch(path1 + "\\file1.1")
-        self.touch(path1 + "\\file1.2")
-        self.touch(path1 + "\\file1.3")
-        self.touch(path2 + "\\file2.1")
-        self.touch(path2 + "\\file2.2")
-        self.touch(path2 + "\\file2.3")
-        self.touch(path3 + "\\file3.1")
-        self.touch(path3 + "\\file3.2")
-        self.touch(path3 + "\\file3.3")
-        self.touch(self.test_dir + "\\file0.1")
+        files_names = []
+        files_names.append(path1 + "\\file1.1")
+        files_names.append(path1 + "\\file1.2")
+        files_names.append(path1 + "\\file1.3")
+        files_names.append(path2 + "\\file2.1")
+        files_names.append(path2 + "\\file2.2")
+        files_names.append(path2 + "\\file2.3")
+        files_names.append(path3 + "\\file3.1")
+        files_names.append(path3 + "\\file3.2")
+        files_names.append(path3 + "\\file3.3")
+        files_names.append(self.test_dir + "\\file0.1")
+
+        for f in files_names:
+            self.touch(f)
+            with open(f,"w") as file_to_write:
+                file_to_write.writelines(f[-3:])
+                file_to_write.close()
+
 
         # self.files_list = self.test_dir + "\\files_list"
         # touch(self.files_list)
@@ -91,7 +99,11 @@ class TestFileSelector(TestCase):
         file_name_with_duplicate = self.test_dir + "\\" + "file_list_with_duplicate.gen"
 
         self.touch(file_name_with_duplicate)
-        open( file_name_with_duplicate,'w').writelines(config_list)
+
+        with open(file_name_with_duplicate,'w') as fnwd:
+            fnwd.writelines(config_list)
+            fnwd.close()
+        # open(file_name_with_duplicate,'w').writelines(config_list)
 
         output_dir = self.test_dir + "\\generated"
         os.makedirs(output_dir)
@@ -105,5 +117,28 @@ class TestFileSelector(TestCase):
         self.assertEqual(extract_file_name("aa\\bb\\file1"), "file1")
         self.assertEqual(extract_file_name("file1"), "file1")
 
+
+    def _testAggregateConfigDosentExist(self):
+        pass
+
+    def _testAggregateDirectoryDosentExist(self):
+        pass
+
+    def _testAggregateFileDosentExist(self):
+        pass
+
+    def testAggregate(self):
+        expected_output = open("aggregatedOutput.rel", 'r').read()
+
+        output_dir = self.test_dir + "\\generated"
+        config_file = os.getcwd() + "\\fileList.gen"
+        os.makedirs(output_dir)
+
+        generate(self.test_dir, config_file, output_dir)
+
+        aggregate(config_file, output_dir)
+
+        import filecmp
+        self.assertTrue(filecmp.cmp(os.getcwd() + "\\aggregatedOutput.rel", output_dir + "fileList.gen.agg" ))
 
 
