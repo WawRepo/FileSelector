@@ -6,7 +6,7 @@ from error_classes import FileExistsErrorNoConfig\
     , FileExistsErrorNoRoot\
     , FileExistsErrorFileAlreadyExist
 
-from file_selector import generate, extract_file_name, aggregate, not_comment_line
+from file_selector import generate, extract_file_name, aggregate, not_comment_line, main
 
 class TestFileSelector(TestCase):
 
@@ -92,9 +92,12 @@ class TestFileSelector(TestCase):
     def _testGenerateFileNotExistInFolderStructure(self):
         pass
 
-    def testGenerateFileExistTwiceInConfigFile(self):
+    def testGenerateFileExistsTwiceInConfigFile(self):
 
-        config_list = open("fileList.gen", 'r').read()
+        with open("fileList.gen", 'r') as config_file:
+            config_list = config_file.read()
+            config_file.close()
+
         config_list = config_list + "\n" + config_list.split("\n")[-2]
         file_name_with_duplicate = self.test_dir + "\\" + "file_list_with_duplicate.gen"
 
@@ -103,7 +106,6 @@ class TestFileSelector(TestCase):
         with open(file_name_with_duplicate,'w') as fnwd:
             fnwd.writelines(config_list)
             fnwd.close()
-        # open(file_name_with_duplicate,'w').writelines(config_list)
 
         output_dir = self.test_dir + "\\generated"
         os.makedirs(output_dir)
@@ -128,7 +130,9 @@ class TestFileSelector(TestCase):
         pass
 
     def testAggregate(self):
-        expected_output = open("aggregatedOutput.rel", 'r').read()
+        with open("aggregatedOutput.rel", 'r') as aggregatedOutput:
+            expected_output = aggregatedOutput.read()
+            aggregatedOutput.close()
 
         output_dir = self.test_dir + "\\generated"
         config_file = os.getcwd() + "\\fileList.gen"
@@ -136,7 +140,6 @@ class TestFileSelector(TestCase):
 
         # test should be run regardless generate functionality
         generate(self.test_dir, config_file, output_dir)
-
         aggregate(config_file, output_dir)
 
         import filecmp
@@ -150,3 +153,23 @@ class TestFileSelector(TestCase):
 
         self.assertFalse(not_comment_line("#asdf"))
         self.assertTrue(not_comment_line("asdf"))
+
+
+    def testMain(self):
+        import sys
+        # expected_output = open("aggregatedOutput.rel", 'r').read()
+        with open("aggregatedOutput.rel", 'r') as aggregatedOutput:
+            expected_output = aggregatedOutput.read()
+            aggregatedOutput.close()
+
+        output_dir = self.test_dir + "\\generated"
+        config_file = os.getcwd() + "\\fileList.gen"
+
+        sys.argv.append(self.test_dir)
+        sys.argv.append(config_file)
+        sys.argv.append(output_dir)
+
+        main()
+
+        import filecmp
+        self.assertTrue(filecmp.cmp(os.getcwd() + "\\aggregatedOutput.rel", output_dir + "\\fileList.gen.agg" ))
